@@ -36,19 +36,19 @@ class GitReader extends GitCore {
 	public function getLogs($param = array()){
 		/* git-log のオプションを設定 */
 		$options = array();
-		$table = array(
-			'page' => 0,
-			'limit' => 20,
-		);
-		foreach($table as $name => $val){
+		foreach($param as $name => $val){
 			${$name} = $val;
-			if(isset($param[$name]) && is_numeric($param[$name])){
-				${$name} = $param[$name];
-			}
 		}
-		$start = $page * $limit;
-		$options[] = "--skip={$start}";
-		$options[] = "-n {$limit}";
+		if(isset($branch)){
+			$options[] = $branch;
+		}
+		if(isset($page) && isset($limit)){
+			$start = $page * $limit;
+			$options[] = "--skip={$start}";
+		}
+		if(isset($limit)){
+			$options[] = "-n {$limit}";
+		}
 		$options[] = "--date=iso";
 		$sep = "\t";
 		$options[] = "--pretty=format:\"%h{$sep}%ad{$sep}%s\"";

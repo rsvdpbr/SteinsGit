@@ -26,7 +26,7 @@ class GitCore {
 		return shell_exec($command);
 	}
 
-	public function getLog(){
+	public function getCommandLog(){
 		return $this->exec_log;
 	}
 
