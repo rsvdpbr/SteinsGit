@@ -1,6 +1,6 @@
 <?php
 
-class Git {
+class GitCore {
 
 	private $repo;
 	private $exec_log;
