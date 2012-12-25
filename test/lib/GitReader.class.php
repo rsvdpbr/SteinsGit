@@ -53,7 +53,7 @@ class GitReader extends GitCore {
 		$sep = "\t";
 		$options[] = "--pretty=format:\"%h{$sep}%ad{$sep}%s\"";
 		/* コマンド実行 */
-		$command = "git log " . implode(' ',$options);
+		$command = "git log " . implode(' ', $options);
 		$result = $this->execute($command);
 		/* 整形 */
 		$result = $this->unifyCrLf($result);
@@ -64,5 +64,15 @@ class GitReader extends GitCore {
 		return $result;
 	}
 
+	/*  */
+	public function getShow($hash, $param = array()){
+		/* git-show 実行 */
+		$options = array();
+		$command = "git show " . $hash . " " . implode(' ', $options);
+		$result = $this->execute($command);
+		/* 整形 */
+		$result = $this->unifyCrLf($result);
+		return $result;
+	}
 }
 
