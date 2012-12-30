@@ -30,7 +30,7 @@ $DataHash['branches'] = $git->getBranches(array('remote'=>true));
 $DataHash['logs'] = $git->getLogs(array('branch' => $branch, 'limit' => $limit, 'page' => $page));
 foreach($DataHash['logs'] as $key => $val){
 	$str = '['.date('Y/m/d H:i:s', strtotime($val[1])).']　'.$val[2];
-	$str = '<a title="'.$val[0].'" href="git_show_1.php?hash='.$val[0].'">' . $str . '</a>';
+	$str = '<a title="'.$val[0].'" href="git_diff_1.php?hash='.$val[0].'">' . $str . '</a>';
 	$DataHash['logs'][$key] = $str;
 }
 $count = count($git->getLogs(array('branch' => $branch)));

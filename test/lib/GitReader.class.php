@@ -42,6 +42,9 @@ class GitReader extends GitCore {
 		if(isset($branch)){
 			$options[] = $branch;
 		}
+		if(isset($commit)){
+			$options[] = $commit;
+		}
 		if(isset($page) && isset($limit)){
 			$start = $page * $limit;
 			$options[] = "--skip={$start}";
@@ -64,7 +67,7 @@ class GitReader extends GitCore {
 		return $result;
 	}
 
-	/*  */
+	/* git-show */
 	public function getShow($hash, $param = array()){
 		/* git-show 実行 */
 		$options = array();
@@ -74,5 +77,15 @@ class GitReader extends GitCore {
 		$result = $this->unifyCrLf($result);
 		return $result;
 	}
+
+	/* git-diff */
+	public function getDiffBetweenTwoCommits($commit1, $commit2, $param = array()){
+		$options = array();
+		$command = 'git diff ' . $commit1 . ' ' . $commit2 . ' ' . implode('', $options);
+		$result = $this->execute($command);
+		$result = $this->unifyCrLf($result);
+		return $result;
+	}
+
 }
 
