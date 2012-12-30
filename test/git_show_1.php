@@ -31,10 +31,10 @@ $show = htmlspecialchars($show);
 $show = explode("\n", $show);
 /* キー部分の正規表現に一致したものに、バリュー部分のスタイルを適用する */
 $regexps = array(
-	'/^\-/' => 'color: #f33;',
-	'/^\+/' => 'color: #080;',
 	'/^(commit|diff)/' => 'font-weight:bold; text-decoration: underline;',
 	'/^(Author|Date|index|@@)/' => 'color: #00c;',
+	'/^\-/' => 'color: #f33;',
+	'/^\+/' => 'color: #080;',
 );
 $sorcecodeRegion = false;
 foreach($show as $key => $val){
@@ -46,9 +46,14 @@ foreach($show as $key => $val){
 		}
 	}
 	/* ソースコード部分をdivでくくる */
-	if(!$sorcecodeRegion && preg_match("/^@@.+@@/", $val)){
-		$show[$key+1] = '<div style="background:#fafafa; border:1px solid #888; margin:4px; padding: 4px;">' . $show[$key+1];
-		$sorcecodeRegion = true;
+	if(preg_match("/^@@.+@@/", $val)){
+		if($sorcecodeRegion){
+			$show[$key] = '</div>' . $show[$key];
+			$show[$key+1] = '<div style="background:#fafafa; border:1px solid #888; margin:4px; padding: 4px;">' . $show[$key+1];
+		}else{
+			$show[$key+1] = '<div style="background:#fafafa; border:1px solid #888; margin:4px; padding: 4px;">' . $show[$key+1];
+			$sorcecodeRegion = true;
+		}
 	}else if($sorcecodeRegion && preg_match("/^diff/", $val)){
 		$show[$key-1] = $show[$key-1] . '</div>';
 		$sorcecodeRegion = false;
