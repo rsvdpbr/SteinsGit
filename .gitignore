@@ -1,3 +1,8 @@
+/app/tmp
+/plugins
+/vendors
+
 .DS_Store
 *~
-\#*#
+\#*\#
+*.bak
