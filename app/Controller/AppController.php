@@ -32,5 +32,23 @@ App::uses('Controller', 'Controller');
  * @link http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
-	public $uses = null;
+
+	public $components = array('RequestHandler');
+
+	protected $DataHash;
+	protected $Error;
+
+	public function beforeFilter(){
+		$this->DataHash = array();
+		$this->Error = false;
+		$this->request->data['repository'] = 'groupware';
+	}
+
+	public function beforeRender(){
+		$this->layout = false;
+		$this->set('result', $this->DataHash);
+		$this->set('error', $this->Error);
+		$this->set('_serialize', array('result', 'error'));
+	}
+
 }
