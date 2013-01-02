@@ -28,16 +28,22 @@ dojo.declare(
 		dojox.encoding.digests.MD5(data)
 
 	# サーバーからデータを取得する
-	# dataname=API名, postdata=POSTで渡すオプション
-	# func=コールバック関数, context=コールバック関数が呼び出されるコンテキスト
-	# force=trueの場合はキャッシュ無視
-	fetch: (dataname, postdata, func, context, force)->
+	# dataname=API名
+	# param.postdata=POSTで渡すオプション
+	# param.context=コールバック関数が呼び出されるコンテキスト
+	# param.force=trueの場合はキャッシュ無視
+	# func=コールバック関数
+	fetch: (dataname, param, func)->
 		dojo.publish 'layout/LAN/fadeIn', ['サーバーからデータを取得中']
+		context = if param.context? then param.context else this
 		# POSTデータとして、引数のオプションとデフォルトのデータをミックスイン
-		postdata = dojo.mixin(dojo.clone(@defaultPostData), postdata)
+		if param.postdata?
+			postdata = dojo.mixin(dojo.clone(@defaultPostData), postdata)
+		else
+			postdata = dojo.clone(@defaultPostData)
 		# キャッシュチェック
 		hashkey = @getHashKey(dataname, postdata)
-		if @cache[hashkey]? or (force? and foce == true)
+		if @cache[hashkey]? or (param.force? and param.force == true)
 			dojo.publish 'layout/LAN/setNotice', ['ローカルキャッシュからデータを取得完了']
 			dojo.publish 'layout/LAN/fadeOut'
 			return func.apply(context, [dojo.clone @cache[hashkey]])

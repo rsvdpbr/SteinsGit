@@ -25,12 +25,17 @@ dojo.declare('app.DataManager', null, {
     data = dojo.toJson([dataname, postdata]);
     return dojox.encoding.digests.MD5(data);
   },
-  fetch: function(dataname, postdata, func, context, force) {
-    var hashkey, that;
+  fetch: function(dataname, param, func) {
+    var context, hashkey, postdata, that;
     dojo.publish('layout/LAN/fadeIn', ['サーバーからデータを取得中']);
-    postdata = dojo.mixin(dojo.clone(this.defaultPostData), postdata);
+    context = param.context != null ? param.context : this;
+    if (param.postdata != null) {
+      postdata = dojo.mixin(dojo.clone(this.defaultPostData), postdata);
+    } else {
+      postdata = dojo.clone(this.defaultPostData);
+    }
     hashkey = this.getHashKey(dataname, postdata);
-    if ((this.cache[hashkey] != null) || ((force != null) && foce === true)) {
+    if ((this.cache[hashkey] != null) || ((param.force != null) && param.force === true)) {
       dojo.publish('layout/LAN/setNotice', ['ローカルキャッシュからデータを取得完了']);
       dojo.publish('layout/LAN/fadeOut');
       return func.apply(context, [dojo.clone(this.cache[hashkey])]);
