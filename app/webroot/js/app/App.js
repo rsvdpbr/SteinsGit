@@ -10,6 +10,8 @@ dojo.require('app.layout.Center');
 
 dojo.require('app.layout.Side');
 
+dojo.require('app.DataManager');
+
 dojo.require('dijit.layout._LayoutWidget');
 
 dojo.require('dijit._Templated');
@@ -27,10 +29,11 @@ dojo.declare('app.App', [dijit.layout._LayoutWidget], {
       right: null
     }
   },
+  datamanager: null,
   constructor: function() {
     this.components.layer = new app.layout.LayerAndNotice;
-    dojo.publish('layout/LAN/fadeIn');
-    return dojo.publish('layout/LAN/setNotice', ['初期化処理を実行中']);
+    dojo.publish('layout/LAN/fadeIn', ['初期化処理を実行中']);
+    return this.datamanager = new app.DataManager;
   },
   postCreate: function() {
     this.inherited(arguments);

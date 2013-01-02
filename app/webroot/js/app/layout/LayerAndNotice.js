@@ -58,17 +58,20 @@ dojo.declare('app.layout.LayerAndNotice', null, {
     return dojo.subscribe('layout/LAN/clearNotice', this, this.clearNotice);
   },
   fadeIn: function(string) {
+    if (string != null) {
+      this.setNotice(string);
+    }
     this.count++;
     console.log('layer> now count is ' + this.count);
     return $(this.components.layer).fadeIn(50);
   },
-  fadeOut: function(string) {
+  fadeOut: function() {
     var _this = this;
     this.count--;
     console.log('layer> now count is ' + this.count);
     if (this.count === 0) {
       console.log('layer> count is zero, fade-out');
-      return $(this.components.layer).fadeOut(200, function() {
+      return $(this.components.layer).fadeOut(300, function() {
         return _this.clearNotice();
       });
     }

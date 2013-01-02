@@ -5,6 +5,7 @@ dojo.require 'app.layout.LayerAndNotice'
 dojo.require 'app.layout.Header'
 dojo.require 'app.layout.Center'
 dojo.require 'app.layout.Side'
+dojo.require 'app.DataManager'
 
 dojo.require 'dijit.layout._LayoutWidget'
 dojo.require 'dijit._Templated'
@@ -22,11 +23,12 @@ dojo.declare(
 		side:
 			left: null
 			right: null
+	datamanager: null
 
 	constructor: ->
 		@components.layer = new app.layout.LayerAndNotice
-		dojo.publish 'layout/LAN/fadeIn'
-		dojo.publish 'layout/LAN/setNotice', ['初期化処理を実行中']
+		dojo.publish 'layout/LAN/fadeIn', ['初期化処理を実行中']
+		@datamanager = new app.DataManager
 
 	postCreate: ->
 		@inherited arguments

@@ -60,15 +60,16 @@ dojo.declare(
 		dojo.subscribe 'layout/LAN/clearNotice', @, @clearNotice
 
 	fadeIn: (string)->
+		if string? then @setNotice(string)
 		@count++;
 		console.log 'layer> now count is ' + @count
 		$(@components.layer).fadeIn(50)
-	fadeOut: (string)->
+	fadeOut:->
 		@count--;
 		console.log 'layer> now count is ' + @count
 		if @count == 0
 			console.log 'layer> count is zero, fade-out'
-			$(@components.layer).fadeOut(200, => @clearNotice())
+			$(@components.layer).fadeOut(300, => @clearNotice())
 
 	setNotice: (string)->
 		@logs.push
