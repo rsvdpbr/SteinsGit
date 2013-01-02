@@ -1,6 +1,7 @@
 
 dojo.provide 'app.App'
 
+dojo.require 'app.layout.LayerAndNotice'
 dojo.require 'app.layout.Header'
 dojo.require 'app.layout.Center'
 dojo.require 'app.layout.Side'
@@ -14,6 +15,7 @@ dojo.declare(
 	[dijit.layout._LayoutWidget]
 
 	components:
+		layer: null
 		main: null
 		header: null
 		center: null
@@ -21,9 +23,17 @@ dojo.declare(
 			left: null
 			right: null
 
+	constructor: ->
+		@components.layer = new app.layout.LayerAndNotice
+		dojo.publish 'layout/LAN/fadeIn'
+		dojo.publish 'layout/LAN/setNotice', ['初期化処理を実行中']
+
 	postCreate: ->
 		@inherited arguments
+		dojo.publish 'layout/LAN/setNotice', ['画面レイアウトを構築中']
 		@setLayout()
+		dojo.publish 'layout/LAN/setNotice', ['ロード完了']
+		dojo.publish 'layout/LAN/fadeOut'
 
 	setLayout: ->
 		$('body').append('<div id="container"></div>');
