@@ -6,71 +6,46 @@ dojo.require('app.layout.Header');
 
 dojo.require('app.layout.Center');
 
-dojo.require('app.layout.Left');
+dojo.require('app.layout.Side');
 
 dojo.require('dijit.layout._LayoutWidget');
 
 dojo.require('dijit._Templated');
 
-dojo.require('dijit.layout.ContentPane');
-
 dojo.require('dijit.layout.BorderContainer');
 
-dojo.require('dijit.layout.AccordionContainer');
-
-dojo.require('dijit.layout.AccordionPane');
-
-dojo.require('dijit.layout.TabContainer');
-
-dojo.declare('app.App', [], {
+dojo.declare('app.App', [dijit.layout._LayoutWidget], {
   components: {
+    main: null,
     header: null,
-    left: {
-      top: null,
-      center: null
-    },
-    center: null
+    center: null,
+    side: {
+      left: null,
+      right: null
+    }
   },
-  constructor: function() {
+  postCreate: function() {
     this.inherited(arguments);
-    console.log('App.coffee : constructor');
     return this.setLayout();
   },
   setLayout: function() {
-    var bc, lefts;
     $('body').append('<div id="container"></div>');
-    bc = new dijit.layout.BorderContainer({
+    this.components.main = new dijit.layout.BorderContainer({
       style: 'width:100%; height:100%;',
       design: 'headline'
     }, 'container');
-    this.components.header = new app.layout.Header({
+    this.components.main.addChild(this.components.header = new app.layout.Header({
       region: 'top',
       style: 'margin-bottom:0;'
-    });
-    lefts = new dijit.layout.BorderContainer({
+    }));
+    this.components.main.addChild(this.components.center = new app.layout.Center({
+      region: 'center'
+    }));
+    this.components.main.addChild(this.components.side.left = new app.layout.Side({
       region: 'left',
-      style: 'width:360px; style="height:100%;" border:0;',
       splitter: 'true'
-    });
-    this.components.left.top = new app.layout.Left({
-      region: 'top',
-      style: 'height:30%; border:0;',
-      splitter: 'true'
-    });
-    this.components.left.center = new app.layout.Left({
-      region: 'center',
-      style: 'border:0;',
-      splitter: 'true'
-    });
-    this.components.center = new app.layout.Center({
-      region: 'center',
-      splitter: 'true'
-    });
-    bc.addChild(this.components.header);
-    bc.addChild(lefts);
-    lefts.addChild(this.components.left.top);
-    lefts.addChild(this.components.left.center);
-    bc.addChild(this.components.center);
-    return bc.startup();
+    }));
+    this.components.main.startup();
+    return this.components.side.left.accordionContainer.resize();
   }
 });

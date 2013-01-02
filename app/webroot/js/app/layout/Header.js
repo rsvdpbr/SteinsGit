@@ -8,8 +8,6 @@ dojo.require('dijit._Templated');
 
 dojo.require('dijit.Menu');
 
-dojo.require('dijit.MenuSeparator');
-
 dojo.require('dijit.MenuBar');
 
 dojo.require('dijit.PopupMenuBarItem');
@@ -20,12 +18,5 @@ dojo.require('dijit.MenuItem');
 
 dojo.declare('app.layout.Header', [dijit._Widget, dijit._Templated], {
   widgetsInTemplate: true,
-  templateString: dojo.cache('app.layout', 'templates/Header.html'),
-  constructor: function() {
-    this.inherited(arguments);
-    return console.log('layout/Header.coffee : constructor');
-  },
-  postCreate: function() {
-    return this.inherited(arguments);
-  }
+  templateString: dojo.cache('app.layout', 'templates/Header.html')
 });
