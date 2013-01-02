@@ -28,16 +28,19 @@ dojo.declare(
 	constructor: ->
 		@components.layer = new app.layout.LayerAndNotice
 		dojo.publish 'layout/LAN/fadeIn', ['初期化処理を実行中']
+		# 基本DataManagerはdojo.publishで呼び出す
+		# TODO: app.DataManager をシングルトンにする
 		@datamanager = new app.DataManager
 
 	postCreate: ->
 		@inherited arguments
-		dojo.publish 'layout/LAN/setNotice', ['画面レイアウトを構築中']
-		@setLayout()
+		@initializeLayout()
+		@initializeComponents()
 		dojo.publish 'layout/LAN/setNotice', ['ロード完了']
 		dojo.publish 'layout/LAN/fadeOut'
 
-	setLayout: ->
+	initializeLayout: ->
+		dojo.publish 'layout/LAN/setNotice', ['画面レイアウトを構築中']
 		$('body').append('<div id="container"></div>');
 		@components.main = new dijit.layout.BorderContainer {
 			style: 'width:100%; height:100%;'
@@ -63,6 +66,7 @@ dojo.declare(
 		@components.main.startup()
 		# AccordionContainerの表示がおかしいため、リサイズする
 		@components.side.left.accordionContainer.resize()
-		
 
+	initializeComponents: ->
+		@components.header.initialize()
 )

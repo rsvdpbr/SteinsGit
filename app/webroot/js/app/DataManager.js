@@ -30,7 +30,7 @@ dojo.declare('app.DataManager', null, {
     dojo.publish('layout/LAN/fadeIn', ['サーバーからデータを取得中']);
     context = param.context != null ? param.context : this;
     if (param.postdata != null) {
-      postdata = dojo.mixin(dojo.clone(this.defaultPostData), postdata);
+      postdata = dojo.mixin(dojo.clone(this.defaultPostData), param.postdata);
     } else {
       postdata = dojo.clone(this.defaultPostData);
     }

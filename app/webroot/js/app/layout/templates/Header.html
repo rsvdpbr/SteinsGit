@@ -1,18 +1,19 @@
 <div>
   <div dojoType="dijit.MenuBar" style="border:0;font-size:18px;">
-	<div dojoType="dijit.MenuBarItem">SteinsGit : Groupware.master</div>
-	<div dojoType="dijit.PopupMenuBarItem" style="width:120px; float:right; text-align:center;">
-	  <span>Repository</span>
-	  <div dojoType="dijit.DropDownMenu" style="font-size:16px;">
-		<div dojoType="dijit.MenuItem">Groupware</div>
-		<div dojoType="dijit.MenuItem">SteinsGit</div>
+	<div dojoType="dijit.MenuBarItem" dojoAttachPoint="domMessage">　</div>
+	<div dojoType="dijit.PopupMenuBarItem" dojoAttachPoint="domConfig" style="width:120px; float:right; text-align:center;">
+	  <span>Config</span>
+	  <div dojoType="dijit.DropDownMenu" dojoAttachPoint="domConfigMenu" style="font-size:16px;">
 	  </div>
 	</div>
-	<div dojoType="dijit.PopupMenuBarItem" style="width:120px; float:right; text-align:center;">
+	<div dojoType="dijit.PopupMenuBarItem" dojoAttachPoint="domRepository" style="width:120px; float:right; text-align:center;">
+	  <span>Repository</span>
+	  <div dojoType="dijit.DropDownMenu" dojoAttachPoint="domRepositoryMenu" style="font-size:16px;">
+	  </div>
+	</div>
+	<div dojoType="dijit.PopupMenuBarItem" dojoAttachPoint="domBranch" style="width:120px; float:right; text-align:center;">
 	  <span>Branch</span>
-	  <div dojoType="dijit.DropDownMenu" style="font-size:16px;">
-		<div dojoType="dijit.MenuItem">master</div>
-		<div dojoType="dijit.MenuItem">develop</div>
+	  <div dojoType="dijit.DropDownMenu" dojoAttachPoint="domBranchMenu" style="font-size:16px;">
 	  </div>
 	</div>
   </div>

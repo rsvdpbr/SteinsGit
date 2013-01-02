@@ -18,5 +18,132 @@ dojo.require('dijit.MenuItem');
 
 dojo.declare('app.layout.Header', [dijit._Widget, dijit._Templated], {
   widgetsInTemplate: true,
-  templateString: dojo.cache('app.layout', 'templates/Header.html')
+  templateString: dojo.cache('app.layout', 'templates/Header.html'),
+  nowRepository: '',
+  nowBranch: '',
+  configRemoteBranch: false,
+  postCreate: function() {
+    this.setMessage();
+    this.setConfigMenu();
+    this.domRepository.setDisabled(true);
+    this.domBranch.setDisabled(true);
+    dojo.connect(this.domRepositoryMenu, 'onItemClick', this, this.onRepositoryClick);
+    return dojo.connect(this.domBranchMenu, 'onItemClick', this, this.onBranchClick);
+  },
+  setConfigMenu: function() {
+    var _this = this;
+    this.domConfigMenu.addChild(new dijit.MenuItem({
+      label: 'Remote Branch Show',
+      onClick: (function() {
+        var that;
+        that = _this;
+        return function() {
+          if (that.configRemoteBranch) {
+            this.setLabel('Remote Branch Show');
+            that.configRemoteBranch = false;
+          } else {
+            this.setLabel('Remote Branch Hide');
+            that.configRemoteBranch = true;
+          }
+          that.nowRepository = '';
+          return that.resetBranch();
+        };
+      })()
+    }));
+    this.domConfigMenu.addChild(new dijit.MenuItem({
+      label: 'Clear cache',
+      onClick: function() {
+        dojo.publish('layout/LAN/fadeIn', ['ローカルキャッシュを削除']);
+        dojo.publish('DataManager/clearCache');
+        return dojo.publish('layout/LAN/fadeOut');
+      }
+    }));
+    return this.domConfigMenu.addChild(new dijit.MenuItem({
+      label: 'About SteingGit',
+      onClick: function() {
+        var layerClickFunc,
+          _this = this;
+        dojo.publish('layout/LAN/setString', ['SteinsGit']);
+        dojo.publish('layout/LAN/fadeIn', ['version 0.1.0 (develop) - 2013/01/03']);
+        layerClickFunc = function() {
+          $('#layer').unbind('click', layerClickFunc);
+          return dojo.publish('layout/LAN/fadeOut', [
+            _this, function() {
+              return dojo.publish('layout/LAN/setString');
+            }
+          ]);
+        };
+        return $('#layer').bind('click', layerClickFunc);
+      }
+    }));
+  },
+  initialize: function() {
+    return this.setRepositoryMenu();
+  },
+  setMessage: function() {
+    var prefix, str;
+    prefix = 'SteinsGit &gt; ';
+    str = 'no repository selected';
+    if (this.nowRepository !== '') {
+      str = this.nowRepository;
+      if (this.nowBranch !== '') {
+        str += ' . ' + this.nowBranch;
+      }
+    }
+    return this.domMessage.setLabel(prefix + str);
+  },
+  setRepositoryMenu: function() {
+    return dojo.publish('DataManager/fetch', [
+      'getRepositories', {
+        context: this
+      }, function(data) {
+        var repo, _i, _len, _ref;
+        this.domRepositoryMenu.destroyDescendants();
+        _ref = data.repositories;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          repo = _ref[_i];
+          this.domRepositoryMenu.addChild(new dijit.MenuItem({
+            label: repo
+          }));
+        }
+        return this.domRepository.setDisabled(false);
+      }
+    ]);
+  },
+  onRepositoryClick: function(item, event) {
+    this.nowRepository = item.label;
+    this.nowBranch = '';
+    this.setMessage();
+    this.domBranch.setDisabled(true);
+    dojo.publish('DataManager/setDefaultPostData', ['repository', this.nowRepository]);
+    return dojo.publish('DataManager/fetch', [
+      'getBranches', {
+        context: this,
+        postdata: {
+          remote: this.configRemoteBranch
+        }
+      }, function(data) {
+        var branch, _i, _len, _ref;
+        this.domBranchMenu.destroyDescendants();
+        _ref = data.branches;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          branch = _ref[_i];
+          this.domBranchMenu.addChild(new dijit.MenuItem({
+            label: branch
+          }));
+        }
+        return this.domBranch.setDisabled(false);
+      }
+    ]);
+  },
+  onBranchClick: function(item, event) {
+    this.nowBranch = item.label;
+    return this.setMessage();
+  },
+  resetBranch: function() {
+    this.domBranchMenu.destroyDescendants();
+    this.domBranch.setDisabled(true);
+    this.nowBranch = '';
+    return this.setMessage();
+  }
 });

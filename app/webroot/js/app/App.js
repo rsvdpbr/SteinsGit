@@ -37,12 +37,13 @@ dojo.declare('app.App', [dijit.layout._LayoutWidget], {
   },
   postCreate: function() {
     this.inherited(arguments);
-    dojo.publish('layout/LAN/setNotice', ['画面レイアウトを構築中']);
-    this.setLayout();
+    this.initializeLayout();
+    this.initializeComponents();
     dojo.publish('layout/LAN/setNotice', ['ロード完了']);
     return dojo.publish('layout/LAN/fadeOut');
   },
-  setLayout: function() {
+  initializeLayout: function() {
+    dojo.publish('layout/LAN/setNotice', ['画面レイアウトを構築中']);
     $('body').append('<div id="container"></div>');
     this.components.main = new dijit.layout.BorderContainer({
       style: 'width:100%; height:100%;',
@@ -61,5 +62,8 @@ dojo.declare('app.App', [dijit.layout._LayoutWidget], {
     }));
     this.components.main.startup();
     return this.components.side.left.accordionContainer.resize();
+  },
+  initializeComponents: function() {
+    return this.components.header.initialize();
   }
 });

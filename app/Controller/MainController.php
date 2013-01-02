@@ -17,9 +17,14 @@ class MainController extends AppController {
 	}
 
 	/* ブランチリストを取得する */
-	public function getBranches($all = false){
+	public function getBranches(){
 		if(!$this->Git->setRepository($this->request->data['repository'])){
 			return false;
+		}
+		if(isset($this->request->data['remote']) && $this->request->data['remote'] == 'true'){
+			$all = true;
+		}else{
+			$all = false;
 		}
 		$this->DataHash['branches'] = $this->Git->getBranches($all);
 	}

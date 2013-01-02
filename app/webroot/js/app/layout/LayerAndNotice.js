@@ -15,6 +15,7 @@ dojo.declare('app.layout.LayerAndNotice', null, {
   constructor: function() {
     this.setLayer();
     this.setNoticeArea();
+    this.setString();
     return this.setSubscribe();
   },
   setLayer: function() {
@@ -33,7 +34,7 @@ dojo.declare('app.layout.LayerAndNotice', null, {
     }).appendTo('body');
   },
   setNoticeArea: function() {
-    this.components.loading = $('<div id="notice">Loading</div>');
+    this.components.loading = $('<div id="notice"></div>');
     $(this.components.loading).css({
       'zIndex': '6',
       'position': 'absolute',
@@ -45,6 +46,8 @@ dojo.declare('app.layout.LayerAndNotice', null, {
       'font-size': '18px',
       'color': '#D2EAF5'
     }).appendTo(this.components.layer);
+    this.components.string = $('<div id="noticeString"></div>');
+    $(this.components.string).appendTo(this.components.loading);
     this.components.notice = $('<div id="noticeArea"></div>');
     return $(this.components.notice).css({
       'margin-top': '80px',
@@ -54,6 +57,7 @@ dojo.declare('app.layout.LayerAndNotice', null, {
   setSubscribe: function() {
     dojo.subscribe('layout/LAN/fadeIn', this, this.fadeIn);
     dojo.subscribe('layout/LAN/fadeOut', this, this.fadeOut);
+    dojo.subscribe('layout/LAN/setString', this, this.setString);
     dojo.subscribe('layout/LAN/setNotice', this, this.setNotice);
     return dojo.subscribe('layout/LAN/clearNotice', this, this.clearNotice);
   },
@@ -65,16 +69,26 @@ dojo.declare('app.layout.LayerAndNotice', null, {
     console.log('layer> now count is ' + this.count);
     return $(this.components.layer).fadeIn(50);
   },
-  fadeOut: function() {
+  fadeOut: function(context, func) {
     var _this = this;
     this.count--;
     console.log('layer> now count is ' + this.count);
     if (this.count === 0) {
       console.log('layer> count is zero, fade-out');
       return $(this.components.layer).fadeOut(300, function() {
-        return _this.clearNotice();
+        _this.clearNotice();
+        if (func != null) {
+          context = context != null ? context : _this;
+          return func.apply(context);
+        }
       });
     }
+  },
+  setString: function(string) {
+    if (!(string != null)) {
+      string = "Loading";
+    }
+    return $(this.components.string).text(string);
   },
   setNotice: function(string) {
     this.logs.push({

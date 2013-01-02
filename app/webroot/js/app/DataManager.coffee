@@ -38,7 +38,7 @@ dojo.declare(
 		context = if param.context? then param.context else this
 		# POSTデータとして、引数のオプションとデフォルトのデータをミックスイン
 		if param.postdata?
-			postdata = dojo.mixin(dojo.clone(@defaultPostData), postdata)
+			postdata = dojo.mixin(dojo.clone(@defaultPostData), param.postdata)
 		else
 			postdata = dojo.clone(@defaultPostData)
 		# キャッシュチェック
