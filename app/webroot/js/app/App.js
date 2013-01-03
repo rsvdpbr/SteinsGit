@@ -12,9 +12,9 @@ dojo.require('app.layout.Side');
 
 dojo.require('app.DataManager');
 
-dojo.require('dijit.layout._LayoutWidget');
+dojo.require('app.Mediater');
 
-dojo.require('dijit._Templated');
+dojo.require('dijit.layout._LayoutWidget');
 
 dojo.require('dijit.layout.BorderContainer');
 
@@ -30,10 +30,12 @@ dojo.declare('app.App', [dijit.layout._LayoutWidget], {
     }
   },
   datamanager: null,
+  mediater: null,
   constructor: function() {
     this.components.layer = new app.layout.LayerAndNotice;
     dojo.publish('layout/LAN/fadeIn', ['初期化処理を実行中']);
-    return this.datamanager = new app.DataManager;
+    this.datamanager = new app.DataManager;
+    return this.mediater = new app.Mediater;
   },
   postCreate: function() {
     this.inherited(arguments);

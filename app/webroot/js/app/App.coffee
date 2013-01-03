@@ -6,9 +6,9 @@ dojo.require 'app.layout.Header'
 dojo.require 'app.layout.Center'
 dojo.require 'app.layout.Side'
 dojo.require 'app.DataManager'
+dojo.require 'app.Mediater'
 
 dojo.require 'dijit.layout._LayoutWidget'
-dojo.require 'dijit._Templated'
 dojo.require 'dijit.layout.BorderContainer'
 
 dojo.declare(
@@ -24,6 +24,7 @@ dojo.declare(
 			left: null
 			right: null
 	datamanager: null
+	mediater: null
 
 	constructor: ->
 		@components.layer = new app.layout.LayerAndNotice
@@ -31,6 +32,7 @@ dojo.declare(
 		# 基本DataManagerはdojo.publishで呼び出す
 		# TODO: app.DataManager をシングルトンにする
 		@datamanager = new app.DataManager
+		@mediater = new app.Mediater
 
 	postCreate: ->
 		@inherited arguments
