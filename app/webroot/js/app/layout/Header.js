@@ -59,7 +59,7 @@ dojo.declare('app.layout.Header', [dijit._Widget, dijit._Templated], {
       }
     }));
     return this.domConfigMenu.addChild(new dijit.MenuItem({
-      label: 'About SteingGit',
+      label: 'About SteinsGit',
       onClick: function() {
         var layerClickFunc,
           _this = this;
@@ -112,7 +112,7 @@ dojo.declare('app.layout.Header', [dijit._Widget, dijit._Templated], {
   },
   onRepositoryClick: function(item, event) {
     this.nowRepository = item.label;
-    this.nowBranch = '';
+    this.resetBranch();
     this.setMessage();
     this.domBranch.setDisabled(true);
     dojo.publish('DataManager/setDefaultPostData', ['repository', this.nowRepository]);
@@ -132,18 +132,21 @@ dojo.declare('app.layout.Header', [dijit._Widget, dijit._Templated], {
             label: branch
           }));
         }
-        return this.domBranch.setDisabled(false);
+        this.domBranch.setDisabled(false);
+        return dojo.publish('Mediater/call', ['layout/Header/selectRepository', [this.nowRepository]]);
       }
     ]);
   },
   onBranchClick: function(item, event) {
     this.nowBranch = item.label;
-    return this.setMessage();
+    this.setMessage();
+    return dojo.publish('Mediater/call', ['layout/Header/selectBranch', [this.nowBranch]]);
   },
   resetBranch: function() {
     this.domBranchMenu.destroyDescendants();
     this.domBranch.setDisabled(true);
     this.nowBranch = '';
-    return this.setMessage();
+    this.setMessage();
+    return dojo.publish('Mediater/call', ['layout/Header/clearBranch', []]);
   }
 });

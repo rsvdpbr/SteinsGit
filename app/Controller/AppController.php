@@ -41,9 +41,6 @@ class AppController extends Controller {
 	public function beforeFilter(){
 		$this->DataHash = array();
 		$this->Error = false;
-		if(!isset($this->request->data['repository'])){
-			$this->request->data['repository'] = '';
-		}
 	}
 
 	public function beforeRender(){

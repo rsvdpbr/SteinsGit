@@ -6,6 +6,7 @@ class Git extends AppModel {
 
 	public $errors = array();
 	private $repository = null;
+	private $branch = null;
 	private $repos = array(
 		'Groupware' => '/Users/ryo/Sites/work/groupware',
 		'SteinsGit' => '/Users/ryo/Sites/stegit',
@@ -31,13 +32,22 @@ class Git extends AppModel {
 
 	/* リポジトリのアクセス権限を確認し、セット */
 	public function setRepository($repo){
-		if(isset($repo)){
-			if(array_key_exists($repo, $this->repos)){
-				$this->repository = $this->repos[$repo];
-				return true;
-			}
+		if(array_key_exists($repo, $this->repos)){
+			$this->repository = $this->repos[$repo];
+			return true;
 		}
 		$this->errors[] = 'Repository Error';
+		return false;
+	}
+
+	/* ブランチの存在を確認し、セット */
+	public function setBranch($branch){
+		$branches = $this->getBranches(true);
+		if(in_array($branch, $branches)){
+			$this->branch = $branch;
+			return true;
+		}
+		$this->errors[] = 'Branch Error';
 		return false;
 	}
 
@@ -62,6 +72,55 @@ class Git extends AppModel {
 			}
 		}
 		return $result;
+	}
+
+	/* ログを配列にして返す */
+	public function getCommits($param = array()){
+		/* git-log のオプションを設定 */
+		$options = array();
+		foreach($param as $name => $val){
+			${$name} = $val;
+		}
+		if(isset($branch)){
+			$options[] = $branch;
+		}
+		if(isset($limit)){
+			if(!is_numeric($limit)){
+				$this->errors[] = 'Invalid arguments';
+				return false;
+			}
+			$options[] = "-n {$limit}";
+		}
+		if(isset($page) && isset($limit)){
+			if(!is_numeric($page)){
+				$this->errors[] = 'Invalid arguments';
+				return false;
+			}
+			$start = $page * $limit;
+			$options[] = "--skip={$start}";
+		}
+		$options[] = "--date=iso";
+		$sep = "\t";
+		$options[] = "--pretty=format:\"%h{$sep}%an{$sep}%ad{$sep}%s\"";
+		/* コマンド実行 */
+		$command = "git log " . implode(' ', $options);
+		$result = $this->execute($command);
+		/* 整形 */
+		$result = $this->unifyCrLf($result);
+		$result = explode("\n", $result);
+		$ret = array();
+		foreach($result as $key => $val){
+			$unit = explode("\t", $val);
+			if($unit[0]){
+				$ret[$key] = array(
+					'hash' => $unit[0],
+					'author' => $unit[1],
+					'datetime' => date('Y-m-d H:i:s', strtotime($unit[2])),
+					'text' => $unit[3],
+				);
+			}
+		}
+		return $ret;
 	}
 
 }

@@ -53,7 +53,7 @@ dojo.declare(
 				dojo.publish 'layout/LAN/fadeOut'
 		))
 		@domConfigMenu.addChild( new dijit.MenuItem(
-			label: 'About SteingGit'
+			label: 'About SteinsGit'
 			onClick: ->
 				dojo.publish 'layout/LAN/setString', ['SteinsGit']
 				dojo.publish 'layout/LAN/fadeIn', ['version 0.1.0 (develop) - 2013/01/03']
@@ -99,7 +99,7 @@ dojo.declare(
 
 	onRepositoryClick: (item, event)->
 		@nowRepository = item.label
-		@nowBranch = ''
+		@resetBranch()
 		@setMessage()
 		@domBranch.setDisabled true
 		dojo.publish 'DataManager/setDefaultPostData', ['repository', @nowRepository]
@@ -119,16 +119,22 @@ dojo.declare(
 						)
 					)
 				@domBranch.setDisabled false
+				# Mediater call
+				dojo.publish 'Mediater/call', ['layout/Header/selectRepository', [@nowRepository]]
 		]
 
 	onBranchClick: (item, event)->
 		@nowBranch = item.label
 		@setMessage()
+		# Mediater call
+		dojo.publish 'Mediater/call', ['layout/Header/selectBranch', [@nowBranch]]
 
 	resetBranch: ->
 		@domBranchMenu.destroyDescendants()
 		@domBranch.setDisabled true
 		@nowBranch = ''
 		@setMessage()
+		# Mediater call
+		dojo.publish 'Mediater/call', ['layout/Header/clearBranch', []]
 
 )
