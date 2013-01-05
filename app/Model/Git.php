@@ -5,10 +5,6 @@ class Git extends AppModel {
 	public $errors = array();
 	private $repository = null;
 	private $branch = null;
-	private $repos = array(
-		'Groupware' => '/Users/ryo/Sites/work/groupware',
-		'SteinsGit' => '/Users/ryo/Sites/stegit',
-	);
 
 	/* シェルコマンドを実行 */
 	private function execute($command){
@@ -24,18 +20,28 @@ class Git extends AppModel {
 
 	/* リポジトリ一覧を返す */
 	public function getRepositories(){
-		return array_keys($this->repos);
+		$repos = $this->find('all', array('fields' => array('name')));
+		$result = array();
+		foreach($repos as $i){
+			$result[] = $i['Git']['name'];
+		}
+		return $result;
 		
 	}
 
 	/* リポジトリのアクセス権限を確認し、セット */
-	public function setRepository($repo){
-		if(array_key_exists($repo, $this->repos)){
-			$this->repository = $this->repos[$repo];
+	public function setRepository($repoName){
+		$repo = $this->find('first', array(
+				'fields' => array('path'),
+				'conditions' => array('name' => $repoName),
+			));
+		if($repo){
+			$this->repository = $repo = $repo['Git']['path'];
 			return true;
+		}else{
+			$this->errors[] = 'Repository Error';
+			return false;
 		}
-		$this->errors[] = 'Repository Error';
-		return false;
 	}
 
 	/* ブランチの存在を確認し、セット */
