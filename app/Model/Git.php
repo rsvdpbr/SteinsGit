@@ -2,8 +2,6 @@
 
 class Git extends AppModel {
 
-	public $useTable = false;
-
 	public $errors = array();
 	private $repository = null;
 	private $branch = null;
