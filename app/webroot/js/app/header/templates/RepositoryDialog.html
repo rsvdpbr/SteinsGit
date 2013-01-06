@@ -1,0 +1,33 @@
+<div class="dijitDialog" role="dialog" aria-labelledby="${id}_title">
+  <div data-dojo-attach-point="titleBar" class="dijitDialogTitleBar">
+	<span data-dojo-attach-point="titleNode" class="dijitDialogTitle" id="${id}_title" role="heading" level="1"></span>
+	<span data-dojo-attach-point="closeButtonNode" class="dijitDialogCloseIcon" data-dojo-attach-event="ondijitclick: onCancel" title="${buttonCancel}" role="button" tabIndex="-1">
+	  <span data-dojo-attach-point="closeText" class="closeText" title="${buttonCancel}">x</span>
+	</span>
+  </div>
+  <div data-dojo-attach-point="containerNode" class="dijitDialogPaneContent">
+
+	<div dojoType="dijit.form.Form" dojoAttachPoint="domForm">
+	  <div style="border:0 solid #aaa; border-width:0 0 1px 3px; margin:0 0 6px; padding:1px 4px">
+		Name to Identify Repository
+	  </div>
+	  <div style="width:95%;margin:0 auto;">
+		<div dojoType="dijit.form.TextBox" name="name" dojoAttachPoint="domFormName" style="width:100%;"></div>
+	  </div>
+	  <div style="width:1px; height:16px"> </div>
+	  <div style="border:0 solid #aaa; border-width:0 0 1px 3px; margin:0 0 6px; padding:1px 4px">
+		Repository Path (absolute-path or url)
+	  </div>
+	  <div style="width:95%;margin:0 auto;">
+		<div dojoType="dijit.form.TextBox" name="path" dojoAttachPoint="domFormPath" style="width:100%;"></div>
+	  </div>
+	</div>
+
+	<div class="dijitDialogPaneActionBar">
+      <button dojoType="dijit.form.Button" dojoAttachPoint="domRegister" disabled>登録</button>
+      <!-- <button dojoType="dijit.form.Button" dojoAttachPoint="domCancel">キャンセル</button> -->
+	</div>
+
+  </div>
+</div>
+

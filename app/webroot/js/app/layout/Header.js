@@ -2,6 +2,8 @@
 
 dojo.provide('app.layout.Header');
 
+dojo.require('app.header.RepositoryDialog');
+
 dojo.require('dijit._Widget');
 
 dojo.require('dijit._Templated');
@@ -21,14 +23,21 @@ dojo.declare('app.layout.Header', [dijit._Widget, dijit._Templated], {
   templateString: dojo.cache('app.layout', 'templates/Header.html'),
   nowRepository: '',
   nowBranch: '',
+  addRepositoryDlg: null,
   configRemoteBranch: false,
   postCreate: function() {
     this.setMessage();
+    this.setSubscribe();
     this.setConfigMenu();
     this.domRepository.setDisabled(true);
     this.domBranch.setDisabled(true);
     dojo.connect(this.domRepositoryMenu, 'onItemClick', this, this.onRepositoryClick);
-    return dojo.connect(this.domBranchMenu, 'onItemClick', this, this.onBranchClick);
+    dojo.connect(this.domBranchMenu, 'onItemClick', this, this.onBranchClick);
+    return this.addRepositoryDlg = new app.header.RepositoryDialog;
+  },
+  setSubscribe: function() {
+    dojo.subscribe('layout/Header/setRepositoryMenu', this, this.setRepositoryMenu);
+    return dojo.subscribe('layout/Header/setRepository', this, this.setRepository);
   },
   setConfigMenu: function() {
     var _this = this;
@@ -105,15 +114,30 @@ dojo.declare('app.layout.Header', [dijit._Widget, dijit._Templated], {
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           repo = _ref[_i];
           this.domRepositoryMenu.addChild(new dijit.MenuItem({
-            label: repo
+            label: repo,
+            type: 'repository'
           }));
         }
+        this.domRepositoryMenu.addChild(new dijit.MenuItem({
+          label: '<span style="font-style:italic;color:#888;">Add new repository</span>',
+          type: 'action',
+          subtype: 'add'
+        }));
         return this.domRepository.setDisabled(false);
       }
     ]);
   },
   onRepositoryClick: function(item, event) {
-    this.nowRepository = item.label;
+    if (item.type === 'action') {
+      if (item.subtype === 'add') {
+        return this.addNewRepository();
+      }
+    } else if (item.type === 'repository') {
+      return this.setRepository(item.label);
+    }
+  },
+  setRepository: function(repoName) {
+    this.nowRepository = repoName;
     this.resetBranch();
     this.setMessage();
     this.domBranch.setDisabled(true);
@@ -140,6 +164,10 @@ dojo.declare('app.layout.Header', [dijit._Widget, dijit._Templated], {
         return dojo.publish('Mediater/call', ['layout/Header/selectRepository', [this.nowRepository]]);
       }
     ]);
+  },
+  addNewRepository: function() {
+    console.log('new dialog show and input repository name and path or url');
+    return this.addRepositoryDlg.show();
   },
   onBranchClick: function(item, event) {
     this.nowBranch = item.label;

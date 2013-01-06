@@ -34,6 +34,12 @@ class MainController extends AppController {
 	/* リポジトリ一覧を取得する */
 	public function getRepositories(){
 		$this->DataHash['repositories'] = $this->Git->getRepositories();
+		return $this->DataHash['repositories'];
+	}
+
+	public function addRepository(){
+		$result = $this->Git->addRepository($this->request->data);
+		$this->DataHash['repository'] = $result['name'];
 	}
 
 	/* ブランチリストを取得する */

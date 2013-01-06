@@ -29,6 +29,36 @@ class Git extends AppModel {
 		
 	}
 
+	/* リポジトリを追加する */
+	public function addRepository($data){
+		$name = $data['newRepoName'];
+		$path = $data['newRepoPath'];
+		$repos = $this->getRepositories();
+		if(in_array($name, $repos)){
+			$this->errors[] = 'The repository-name(' . $name . ') already exists';
+		}
+		/* URLの場合、git-clone後に$pathを書き換える */
+		if(preg_match('/^.+(?:\:\/\/|(?:@.+)?\:).+$/', $path)){
+			$dir = ROOT . '/repos';
+			shell_exec("cd {$dir}; git clone {$path} {$name};");
+			$path = $dir . '/' . $name;
+		}
+		if(!file_exists($path)){
+			$this->errors[] = 'There is no directory: ' . $path;
+		}else if(!file_exists($path . '/.git/config')){
+			$this->errors[] = 'There is no repository: ' . $path.'/.git/config';
+		}
+		if(count($this->errors) > 0){ return false; }
+		/* 現時点でエラーが発生していなければ、リポジトリ情報を保存する */
+		$this->create();
+		$saveData = array('name' => $name, 'path' => $path);
+		if(!$this->save($saveData)){
+			$this->errors[] = 'Could not save data';
+			return false;
+		}
+		return $saveData;
+	}
+
 	/* リポジトリのアクセス権限を確認し、セット */
 	public function setRepository($repoName){
 		$repo = $this->find('first', array(

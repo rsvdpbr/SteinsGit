@@ -1,6 +1,7 @@
 
 dojo.provide 'app.layout.Header'
 
+dojo.require 'app.header.RepositoryDialog'
 
 dojo.require 'dijit._Widget'
 dojo.require 'dijit._Templated'
@@ -19,16 +20,24 @@ dojo.declare(
 
 	nowRepository: ''
 	nowBranch: ''
+	addRepositoryDlg: null
 	configRemoteBranch: false
 
 	postCreate: ->
 		@setMessage()
+		@setSubscribe()
 		@setConfigMenu()
 		# リポジトリ・ブランチメニューを初期化
 		@domRepository.setDisabled true
 		@domBranch.setDisabled true
 		dojo.connect @domRepositoryMenu, 'onItemClick', @, @onRepositoryClick
 		dojo.connect @domBranchMenu, 'onItemClick', @, @onBranchClick
+		# ダイアログを作成
+		@addRepositoryDlg = new app.header.RepositoryDialog
+
+	setSubscribe: ->
+		dojo.subscribe 'layout/Header/setRepositoryMenu', @, @setRepositoryMenu
+		dojo.subscribe 'layout/Header/setRepository', @, @setRepository
 
 	setConfigMenu: ->
 		@domConfigMenu.addChild( new dijit.MenuItem(
@@ -92,38 +101,57 @@ dojo.declare(
 				@domRepositoryMenu.destroyDescendants()
 				for repo in data.repositories
 					@domRepositoryMenu.addChild(
-						new dijit.MenuItem(
+						new dijit.MenuItem
 							label: repo
-						)
+							type: 'repository'
 					)
+				@domRepositoryMenu.addChild(
+					new dijit.MenuItem
+						label: '<span style="font-style:italic;color:#888;">Add new repository</span>'
+						type: 'action'
+						subtype: 'add'
+				)
 				@domRepository.setDisabled false
 		]
 
 	onRepositoryClick: (item, event)->
-		@nowRepository = item.label
-		@resetBranch()
-		@setMessage()
-		@domBranch.setDisabled true
-		dojo.publish 'DataManager/setDefaultPostData', ['repository', @nowRepository]
-		dojo.publish 'DataManager/fetch', ['getBranches',
-			{
-				context: @
-				postdata:
-					remote: @configRemoteBranch
-			}
-			(data)->
-				# ブランチメニューをセットする
-				@domBranchMenu.destroyDescendants()
-				for branch in data.branches
-					@domBranchMenu.addChild(
-						new dijit.MenuItem(
-							label: branch
+		if item.type == 'action'
+			if item.subtype == 'add'
+				@addNewRepository()
+		else if item.type == 'repository'
+			@setRepository(item.label)
+
+	setRepository: (repoName)->
+			@nowRepository = repoName
+			@resetBranch()
+			@setMessage()
+			@domBranch.setDisabled true
+			dojo.publish 'layout/LAN/addCommonNotice', ['カレントリポジトリを '+@nowRepository+' に設定しました']
+			dojo.publish 'DataManager/setDefaultPostData', ['repository', @nowRepository]
+			dojo.publish 'DataManager/fetch', ['getBranches',
+				{
+					context: @
+					postdata:
+						remote: @configRemoteBranch
+				}
+				(data)->
+					dojo.publish 'layout/LAN/addCommonNotice', [@nowBranch+' ブランチ情報を取得しました, 画面右上のBranchメニューから設定可能です']
+					# ブランチメニューをセットする
+					@domBranchMenu.destroyDescendants()
+					for branch in data.branches
+						@domBranchMenu.addChild(
+							new dijit.MenuItem(
+								label: branch
+							)
 						)
-					)
-				@domBranch.setDisabled false
-				# Mediater call
-				dojo.publish 'Mediater/call', ['layout/Header/selectRepository', [@nowRepository]]
-		]
+					@domBranch.setDisabled false
+					# Mediater call
+					dojo.publish 'Mediater/call', ['layout/Header/selectRepository', [@nowRepository]]
+			]
+
+	addNewRepository: ->
+		console.log 'new dialog show and input repository name and path or url'
+		@addRepositoryDlg.show()
 
 	onBranchClick: (item, event)->
 		@nowBranch = item.label
