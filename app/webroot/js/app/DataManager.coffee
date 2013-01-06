@@ -64,6 +64,7 @@ dojo.declare(
 			error: (error)->
 				console.log 'ERROR OCCURRED', dataname, error
 				dojo.publish 'layout/LAN/setNotice', ['データ取得中にエラーが発生']
+				dojo.publish 'layout/LAN/addCommonNotice', ['データ取得中にエラーが発生しました（'+error.toString()+'）']
 				dojo.publish 'layout/LAN/fadeOut'
 		
 	

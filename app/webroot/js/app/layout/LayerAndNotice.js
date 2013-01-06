@@ -7,6 +7,7 @@ dojo.require('dojo.date.locale');
 dojo.declare('app.layout.LayerAndNotice', null, {
   count: 0,
   logs: [],
+  commonLogs: [],
   components: {
     layer: null,
     loading: null,
@@ -15,6 +16,7 @@ dojo.declare('app.layout.LayerAndNotice', null, {
   constructor: function() {
     this.setLayer();
     this.setNoticeArea();
+    this.setCommonNotice();
     this.setString();
     return this.setSubscribe();
   },
@@ -22,7 +24,7 @@ dojo.declare('app.layout.LayerAndNotice', null, {
     this.components.layer = $('<div id="layer"></div>');
     return $(this.components.layer).css({
       'position': 'absolute',
-      'zIndex': '5',
+      'zIndex': '1000',
       'width': '100%',
       'height': '100%',
       'backgroundColor': '#555',
@@ -36,7 +38,7 @@ dojo.declare('app.layout.LayerAndNotice', null, {
   setNoticeArea: function() {
     this.components.loading = $('<div id="notice"></div>');
     $(this.components.loading).css({
-      'zIndex': '6',
+      'zIndex': '1001',
       'position': 'absolute',
       'width': '100%',
       'textAlign': 'center',
@@ -54,12 +56,72 @@ dojo.declare('app.layout.LayerAndNotice', null, {
       'font-size': '15px'
     }).appendTo(this.components.loading);
   },
+  setCommonNotice: function() {
+    this.components.commonNotice = $('<div id="commonNotice"></div>');
+    return $(this.components.commonNotice).css({
+      'zIndex': '1002',
+      'position': 'absolute',
+      'width': '40%',
+      'height': '100px',
+      'opacity': '0.5',
+      'bottom': '10px',
+      'right': '20px',
+      'font-weight': 'bold',
+      'font-size': '13px',
+      'padding': '4px 12px',
+      'color': '#D2EAF5',
+      'backgroundColor': '#555',
+      'border': '1px solid #aaa',
+      'display': 'none',
+      'order-radius': '6px',
+      '-webkit-border-radius': '6px',
+      '-moz-border-radius': '6px'
+    }).appendTo('body');
+  },
+  addCommonNotice: function(notice, timeout) {
+    var node, noticeCount,
+      _this = this;
+    noticeCount = $(this.components.commonNotice).children().length;
+    timeout = timeout || (5000 + noticeCount * 300);
+    this.commonLogs.push(notice);
+    if ($(this.components.commonNotice).css('display') === 'none') {
+      $(this.components.commonNotice).fadeIn(200);
+    }
+    node = $('<div style="opacity:1.0;">' + notice + '</div>').hide();
+    $(this.components.commonNotice).append(node);
+    setTimeout((function() {
+      var that;
+      that = node;
+      return function() {
+        return $(that).fadeOut(200, function() {
+          var handler;
+          $(that).empty().show().css({
+            height: '20px'
+          });
+          return handler = setInterval(function() {
+            var height;
+            height = $(that).css('height').match(/^([0-9]+)px$/)[1] - 0;
+            $(that).css('height', (height - 1) + 'px');
+            if (height < 1) {
+              clearInterval(handler);
+              $(that).remove();
+              if ($(_this.components.commonNotice).children().length === 0) {
+                return $(_this.components.commonNotice).fadeOut(150);
+              }
+            }
+          }, 25);
+        });
+      };
+    })(), timeout);
+    return $(node).show(200);
+  },
   setSubscribe: function() {
     dojo.subscribe('layout/LAN/fadeIn', this, this.fadeIn);
     dojo.subscribe('layout/LAN/fadeOut', this, this.fadeOut);
     dojo.subscribe('layout/LAN/setString', this, this.setString);
     dojo.subscribe('layout/LAN/setNotice', this, this.setNotice);
-    return dojo.subscribe('layout/LAN/clearNotice', this, this.clearNotice);
+    dojo.subscribe('layout/LAN/clearNotice', this, this.clearNotice);
+    return dojo.subscribe('layout/LAN/addCommonNotice', this, this.addCommonNotice);
   },
   fadeIn: function(string) {
     if (string != null) {

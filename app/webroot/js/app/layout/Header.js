@@ -41,9 +41,11 @@ dojo.declare('app.layout.Header', [dijit._Widget, dijit._Templated], {
           if (that.configRemoteBranch) {
             this.setLabel('Remote Branch Show');
             that.configRemoteBranch = false;
+            dojo.publish('layout/LAN/addCommonNotice', ['リモートブランチの表示をオフにしました']);
           } else {
             this.setLabel('Remote Branch Hide');
             that.configRemoteBranch = true;
+            dojo.publish('layout/LAN/addCommonNotice', ['リモートブランチの表示をオンにしました']);
           }
           that.nowRepository = '';
           return that.resetBranch();
@@ -53,9 +55,8 @@ dojo.declare('app.layout.Header', [dijit._Widget, dijit._Templated], {
     this.domConfigMenu.addChild(new dijit.MenuItem({
       label: 'Clear cache',
       onClick: function() {
-        dojo.publish('layout/LAN/fadeIn', ['ローカルキャッシュを削除']);
         dojo.publish('DataManager/clearCache');
-        return dojo.publish('layout/LAN/fadeOut');
+        return dojo.publish('layout/LAN/addCommonNotice', ['ローカルキャッシュを削除しました']);
       }
     }));
     return this.domConfigMenu.addChild(new dijit.MenuItem({
@@ -98,6 +99,7 @@ dojo.declare('app.layout.Header', [dijit._Widget, dijit._Templated], {
         context: this
       }, function(data) {
         var repo, _i, _len, _ref;
+        dojo.publish('layout/LAN/addCommonNotice', ['リポジトリ一覧を取得しました, 画面右上のRepositoryメニューから設定可能です']);
         this.domRepositoryMenu.destroyDescendants();
         _ref = data.repositories;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -115,6 +117,7 @@ dojo.declare('app.layout.Header', [dijit._Widget, dijit._Templated], {
     this.resetBranch();
     this.setMessage();
     this.domBranch.setDisabled(true);
+    dojo.publish('layout/LAN/addCommonNotice', ['カレントリポジトリを ' + this.nowRepository + ' に設定しました']);
     dojo.publish('DataManager/setDefaultPostData', ['repository', this.nowRepository]);
     return dojo.publish('DataManager/fetch', [
       'getBranches', {
@@ -124,6 +127,7 @@ dojo.declare('app.layout.Header', [dijit._Widget, dijit._Templated], {
         }
       }, function(data) {
         var branch, _i, _len, _ref;
+        dojo.publish('layout/LAN/addCommonNotice', [this.nowBranch + ' ブランチ情報を取得しました, 画面右上のBranchメニューから設定可能です']);
         this.domBranchMenu.destroyDescendants();
         _ref = data.branches;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -140,6 +144,7 @@ dojo.declare('app.layout.Header', [dijit._Widget, dijit._Templated], {
   onBranchClick: function(item, event) {
     this.nowBranch = item.label;
     this.setMessage();
+    dojo.publish('layout/LAN/addCommonNotice', [this.nowBranch + ' ブランチにチェックアウトしました']);
     return dojo.publish('Mediater/call', ['layout/Header/selectBranch', [this.nowBranch]]);
   },
   resetBranch: function() {

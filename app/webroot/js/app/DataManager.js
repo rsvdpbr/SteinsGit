@@ -58,6 +58,7 @@ dojo.declare('app.DataManager', null, {
       error: function(error) {
         console.log('ERROR OCCURRED', dataname, error);
         dojo.publish('layout/LAN/setNotice', ['データ取得中にエラーが発生']);
+        dojo.publish('layout/LAN/addCommonNotice', ['データ取得中にエラーが発生しました（' + error.toString() + '）']);
         return dojo.publish('layout/LAN/fadeOut');
       }
     });

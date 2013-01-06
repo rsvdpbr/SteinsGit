@@ -39,18 +39,19 @@ dojo.declare(
 					if that.configRemoteBranch
 						@setLabel 'Remote Branch Show'
 						that.configRemoteBranch = false
+						dojo.publish 'layout/LAN/addCommonNotice', ['リモートブランチの表示をオフにしました']
 					else
 						@setLabel 'Remote Branch Hide'
 						that.configRemoteBranch = true
+						dojo.publish 'layout/LAN/addCommonNotice', ['リモートブランチの表示をオンにしました']
 					that.nowRepository = ''
 					that.resetBranch()
 		))
 		@domConfigMenu.addChild( new dijit.MenuItem(
 			label: 'Clear cache'
 			onClick: ->
-				dojo.publish 'layout/LAN/fadeIn', ['ローカルキャッシュを削除']
 				dojo.publish 'DataManager/clearCache'
-				dojo.publish 'layout/LAN/fadeOut'
+				dojo.publish 'layout/LAN/addCommonNotice', ['ローカルキャッシュを削除しました']
 		))
 		@domConfigMenu.addChild( new dijit.MenuItem(
 			label: 'About SteinsGit'
@@ -86,6 +87,7 @@ dojo.declare(
 		dojo.publish 'DataManager/fetch', ['getRepositories',
 			{context: @},
 			(data)->
+				dojo.publish 'layout/LAN/addCommonNotice', ['リポジトリ一覧を取得しました, 画面右上のRepositoryメニューから設定可能です']
 				# リポジトリメニューをセットする
 				@domRepositoryMenu.destroyDescendants()
 				for repo in data.repositories
@@ -126,6 +128,7 @@ dojo.declare(
 	onBranchClick: (item, event)->
 		@nowBranch = item.label
 		@setMessage()
+		dojo.publish 'layout/LAN/addCommonNotice', [@nowBranch+' ブランチにチェックアウトしました']
 		# Mediater call
 		dojo.publish 'Mediater/call', ['layout/Header/selectBranch', [@nowBranch]]
 
