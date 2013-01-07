@@ -73,7 +73,7 @@ dojo.declare('app.layout.LayerAndNotice', null, {
       'backgroundColor': '#555',
       'border': '1px solid #aaa',
       'display': 'none',
-      'order-radius': '6px',
+      'border-radius': '6px',
       '-webkit-border-radius': '6px',
       '-moz-border-radius': '6px'
     }).appendTo('body');
